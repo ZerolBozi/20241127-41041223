@@ -219,6 +219,7 @@ class NoteApp {
                 this.showUserMenu();
                 if (this.registerForm) this.registerForm.classList.add('hidden');
                 if (this.noteInputArea) this.noteInputArea.classList.remove('hidden');
+                if (this.notesContainer) this.notesContainer.classList.remove('hidden');
 
                 await this.db.ref(`users/${user.uid}`).update({
                     lastLogin: now
