@@ -187,6 +187,16 @@ class NoteApp {
             const provider = new firebase.auth.GoogleAuthProvider();
             const result = await this.auth.signInWithPopup(provider);
             const token = await result.user.getIdToken();
+
+            const userRef = this.db.ref(`users/${result.user.uid}`);
+            const userSnapshot = await userRef.once('value');
+
+            if (userSnapshot.exists()) {
+                await userRef.update({
+                    lastLogin: firebase.database.ServerValue.TIMESTAMP
+                });
+            }
+
             this.setCookie('noteAppUser', token, 7);
         } catch (error) {
             if (this.errorMessage) {
@@ -203,12 +213,16 @@ class NoteApp {
                     name: user.displayName,
                     email: user.email,
                     createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    lastLogin: firebase.database.ServerValue.TIMESTAMP
+                    lastLogin: null
                 });
 
                 this.showUserMenu();
                 if (this.registerForm) this.registerForm.classList.add('hidden');
                 if (this.noteInputArea) this.noteInputArea.classList.remove('hidden');
+
+                await this.db.ref(`users/${user.uid}`).update({
+                    lastLogin: now
+                });
 
                 const token = await user.getIdToken();
                 this.setCookie('noteAppUser', token, 7);
