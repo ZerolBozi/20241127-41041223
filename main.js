@@ -222,7 +222,7 @@ class NoteApp {
                 if (this.notesContainer) this.notesContainer.classList.remove('hidden');
 
                 await this.db.ref(`users/${user.uid}`).update({
-                    lastLogin: now
+                    lastLogin: firebase.database.ServerValue.TIMESTAMP
                 });
 
                 const token = await user.getIdToken();
